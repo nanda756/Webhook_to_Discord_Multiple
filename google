@@ -1,4 +1,4 @@
-const WEBHOOK_URL         = "https://discord.com/api/webhooks/1366054869491777536/Na40sIP2-eur0YSO2W5Y7NOKVmC7_3Q8j8uElMrVVVrk09IHEG9B8AKWLVA4cAqjJJe8";
+const WEBHOOK_URL         = "Вебхук";
 const COLOR               = 0x404040; // Серая боковая линия
 const TITLE               = "United States Secret Service Helper";
 const URL                 = "";
@@ -64,13 +64,13 @@ function onSubmit(e) {
 
   switch (thirdAnswer) {
     case "Central Specialization Division (C.S.D.)":
-      dynamicMention = " <@&1366055434896539791>";
+      dynamicMention = "Роль Кур ЦСД";
       break;
     case "Special Response Team (S.R.T.)":
-      dynamicMention = "<@&1366055424301858980>";
+      dynamicMention = "Роль Кур СРТ";
       break;  
     case "Agent Training Division (A.T.D.)":
-      dynamicMention = "<@&1366055473589256222>";
+      dynamicMention = "Роль Кур АТД";
       break;  
     case "Deputy Director USSS":
       dynamicMention = "";
@@ -80,7 +80,7 @@ function onSubmit(e) {
   }
 
   // Статичные упоминания
-  const staticMention = "<@&1366055492971139173>";
+  const staticMention = "Роль Дира";
   const fullMention = `${staticMention} ${dynamicMention}`.trim();
 
   const timestamp = INCLUDE_TIMESTAMP ? new Date().toISOString() : "";
