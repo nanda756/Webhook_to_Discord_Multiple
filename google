@@ -1,20 +1,37 @@
-const WEBHOOK_URL         = "https://discord.com/api/webhooks/1171923117254381718/90C7Xmv-Xm8Hn26ulODOHRoOLrCcM6Q3XOyYuhdDvmXKWSNoNSamgzBJ9qJefSRbF2Ol";
-const COLOR               = 0x808080; // Серая боковая линия
-const TITLE               = "Новая Заявка в отдел ATD🎓";
+const WEBHOOK_URL         = "https://discord.com/api/webhooks/1366054869491777536/Na40sIP2-eur0YSO2W5Y7NOKVmC7_3Q8j8uElMrVVVrk09IHEG9B8AKWLVA4cAqjJJe8";
+const COLOR               = 0x404040; // Серая боковая линия
+const TITLE               = "United States Secret Service Helper";
 const URL                 = "";
 const DESCRIPTION         = "";
 const THUMBNAIL_URL       = "";
-const FOOTER_GIF_URL      = "https://i.gifer.com/MU2S.gif";
+const FOOTER_GIF_URL      = "";
 
 // Авторский блок
-const AUTHOR_NAME         = "";
+const AUTHOR_NAME         = "United States Secret Service Helper";
 const AUTHOR_URL          = "";
-const AUTHOR_ICON_URL     = "";
+const AUTHOR_ICON_URL     = "https://i.imgur.com/sIyUno6.png";
 
 // Подпись
-const FOOTER_TEXT         = "";
-const FOOTER_ICON_URL     = "";
+const FOOTER_TEXT         = "Created by Nanda Kalashnikov | Для связи: Discord nanda070";
+const FOOTER_ICON_URL     = "https://i.imgur.com/YscYAhI.gif";
 const INCLUDE_TIMESTAMP   = false;
+
+// Функция разбивки по строкам с учётом лимита 1024 символа
+function chunkLines(lines, maxLen = 1024) {
+  const parts = [];
+  let buffer = "";
+  for (const line of lines) {
+    const candidate = buffer ? buffer + "\n" + line : line;
+    if (candidate.length > maxLen) {
+      parts.push(buffer);
+      buffer = line;
+    } else {
+      buffer = candidate;
+    }
+  }
+  if (buffer) parts.push(buffer);
+  return parts.filter(p => p.trim().length > 0);
+}
 
 function onSubmit(e) {
   const responses = e.response.getItemResponses();
@@ -25,8 +42,14 @@ function onSubmit(e) {
     const answer   = resp.getResponse();
     if (!answer) return;
 
-    const parts = answer.match(/[\s\S]{1,1024}/g) || [];
+    // Разбиваем по строкам и аккуратно упаковываем в части ≤1024
+    const lines = answer.split("\n");
+    const parts = chunkLines(lines);
+
     parts.forEach((part, idx) => {
+      // Фильтруем чисто цифровые ID вида "12345/67890"
+      if (/^\d+\/\d+$/.test(part.trim())) return;
+
       fields.push({
         name:   idx === 0 ? question : `${question} (cont.)`,
         value:  part,
@@ -41,17 +64,23 @@ function onSubmit(e) {
 
   switch (thirdAnswer) {
     case "Central Specialization Division (C.S.D.)":
-      dynamicMention = "<@&734479728987209799> <@&734480892302721074>";
+      dynamicMention = " <@&1366055434896539791>";
       break;
     case "Special Response Team (S.R.T.)":
-      dynamicMention = "<@&866064852395884604> <@&878016775827124294>";
-      break;
+      dynamicMention = "<@&1366055424301858980>";
+      break;  
+    case "Agent Training Division (A.T.D.)":
+      dynamicMention = "<@&1366055473589256222>";
+      break;  
+    case "Deputy Director USSS":
+      dynamicMention = "";
+      break;  
     default:
       dynamicMention = "";
   }
 
   // Статичные упоминания
-  const staticMention = "<@&959448297825792071> <@&959919668053835786>";
+  const staticMention = "<@&1366055492971139173>";
   const fullMention = `${staticMention} ${dynamicMention}`.trim();
 
   const timestamp = INCLUDE_TIMESTAMP ? new Date().toISOString() : "";
