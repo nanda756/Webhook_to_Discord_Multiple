@@ -1,0 +1,87 @@
+const WEBHOOK_URL         = "https://discord.com/api/webhooks/1171923117254381718/90C7Xmv-Xm8Hn26ulODOHRoOLrCcM6Q3XOyYuhdDvmXKWSNoNSamgzBJ9qJefSRbF2Ol";
+const COLOR               = 0x808080; // Серая боковая линия
+const TITLE               = "Новая Заявка в отдел ATD🎓";
+const URL                 = "";
+const DESCRIPTION         = "";
+const THUMBNAIL_URL       = "";
+const FOOTER_GIF_URL      = "https://i.gifer.com/MU2S.gif";
+
+// Авторский блок
+const AUTHOR_NAME         = "";
+const AUTHOR_URL          = "";
+const AUTHOR_ICON_URL     = "";
+
+// Подпись
+const FOOTER_TEXT         = "";
+const FOOTER_ICON_URL     = "";
+const INCLUDE_TIMESTAMP   = false;
+
+function onSubmit(e) {
+  const responses = e.response.getItemResponses();
+  const fields = [];
+
+  responses.forEach((resp) => {
+    const question = resp.getItem().getTitle();
+    const answer   = resp.getResponse();
+    if (!answer) return;
+
+    const parts = answer.match(/[\s\S]{1,1024}/g) || [];
+    parts.forEach((part, idx) => {
+      fields.push({
+        name:   idx === 0 ? question : `${question} (cont.)`,
+        value:  part,
+        inline: false
+      });
+    });
+  });
+
+  // Динамическое упоминание по 3-му ответу
+  const thirdAnswer = responses[2]?.getResponse() || "";
+  let dynamicMention = "";
+
+  switch (thirdAnswer) {
+    case "Central Specialization Division (C.S.D.)":
+      dynamicMention = "<@&734479728987209799> <@&734480892302721074>";
+      break;
+    case "Special Response Team (S.R.T.)":
+      dynamicMention = "<@&866064852395884604> <@&878016775827124294>";
+      break;
+    default:
+      dynamicMention = "";
+  }
+
+  // Статичные упоминания
+  const staticMention = "<@&959448297825792071> <@&959919668053835786>";
+  const fullMention = `${staticMention} ${dynamicMention}`.trim();
+
+  const timestamp = INCLUDE_TIMESTAMP ? new Date().toISOString() : "";
+
+  const payload = {
+    content: fullMention,
+    embeds: [{
+      title:       TITLE,
+      url:         URL,
+      description: DESCRIPTION,
+      color:       COLOR,
+      fields:      fields,
+      thumbnail:   { url: THUMBNAIL_URL },
+      image:       { url: FOOTER_GIF_URL },
+      author: {
+        name:     AUTHOR_NAME,
+        url:      AUTHOR_URL,
+        icon_url: AUTHOR_ICON_URL
+      },
+      footer: {
+        text:      FOOTER_TEXT,
+        icon_url:  FOOTER_ICON_URL
+      },
+      timestamp: timestamp
+    }]
+  };
+
+  UrlFetchApp.fetch(WEBHOOK_URL, {
+    method:      "post",
+    contentType: "application/json",
+    payload:     JSON.stringify(payload)
+  });
+}
